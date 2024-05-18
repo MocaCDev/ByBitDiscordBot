@@ -76,7 +76,7 @@ class ByBitBackend:
             return session.get_wallet_balance(
                 accountType=ByBitBackend.ACCOUNT_TYPES[account_type],
                 coin=coin
-            )['result'][0]['totalWalletBalance']
+            ) #['result'][0]['totalWalletBalance']
         except Exception as e:
             print(f'\n`get_user_balance_from_session` error: {str(e)}')
             return None
@@ -92,16 +92,18 @@ class ByBitBackend:
         try:
             executions = session.get_executions(category='linear')
 
-            for x in executions:
-                for l in x['result']['list']:
-                    if l['side'] == 'Buy':
-                        buy_total += l['orderPrice']
-                    if l['side'] == 'Sell':
-                        sell_total += l['orderPrice']
+            return executions
 
-            return [buy_total, sell_total]
+            #for x in executions:
+            #    for l in x['result']['list']:
+            #        if l['side'] == 'Buy':
+            #            buy_total += l['orderPrice']
+            #        if l['side'] == 'Sell':
+            #            sell_total += l['orderPrice']
+
+            #return [buy_total, sell_total]
         except Exception as e:
-            print(f'\n`get_user_balance_from_session` error: {str(e)}')
+            print(f'\n`get_total_bs_data_from_session` error: {str(e)}')
             return ['', ''] # The values should be decimal values, so if this is returned we know there was an error.
 
     # `interval` is, by default, based on daily reports of the stock (`D`; see `calculate_gain_or_loss`).
@@ -126,7 +128,9 @@ class ByBitBackend:
         try:
             executions = session.get_executions(category='linear')
 
-            for x in executions:
+            return executions
+
+            '''for x in executions:
                 for l in x['result']['list']:
                     if l['side'] == 'Buy':
                         all_symbols.append(l['symbol'])
@@ -162,9 +166,9 @@ class ByBitBackend:
             for _, v in order_quantity.items():
                 total_buy += v[1]
 
-            return [stock_total, total_sell, total_buy]
+            return [stock_total, total_sell, total_buy]'''
         except Exception as e:
-            print(f'\n`get_user_balance_from_session` error: {str(e)}')
+            print(f'\n`get_total_stock_data_from_session` error: {str(e)}')
             return ['', '', ''] # The values should be decimal values, so if this is returned we know there was an error.
 
     def close_session(self, user_id: int):
