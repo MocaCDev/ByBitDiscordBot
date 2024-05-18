@@ -1,0 +1,9 @@
+database_name: "users"
+table_name: "user_info"
+
+columns:
+  user_id: "INT"
+  account_type: "VARCHAR(9)"
+  private: "VARCHAR(50)"
+  public: "VARCHAR(25)"
+  balance: "DECIMAL"
