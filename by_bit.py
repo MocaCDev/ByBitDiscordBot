@@ -77,7 +77,8 @@ class ByBitBackend:
                 accountType=ByBitBackend.ACCOUNT_TYPES[account_type],
                 coin=coin
             )['result'][0]['totalWalletBalance']
-        except:
+        except Exception as e:
+            print(f'\n`get_user_balance_from_session` error: {str(e)}')
             return None
 
     def get_total_bs_data_from_session(self, user_id: int):
@@ -99,7 +100,8 @@ class ByBitBackend:
                         sell_total += l['orderPrice']
 
             return [buy_total, sell_total]
-        except:
+        except Exception as e:
+            print(f'\n`get_user_balance_from_session` error: {str(e)}')
             return ['', ''] # The values should be decimal values, so if this is returned we know there was an error.
 
     # `interval` is, by default, based on daily reports of the stock (`D`; see `calculate_gain_or_loss`).
@@ -161,7 +163,8 @@ class ByBitBackend:
                 total_buy += v[1]
 
             return [stock_total, total_sell, total_buy]
-        except:
+        except Exception as e:
+            print(f'\n`get_user_balance_from_session` error: {str(e)}')
             return ['', '', ''] # The values should be decimal values, so if this is returned we know there was an error.
 
     def close_session(self, user_id: int):
