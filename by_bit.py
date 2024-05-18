@@ -60,6 +60,9 @@ class ByBitBackend:
             session = self.get_session(user_id)
             api_key_information = session.get_api_key_information()
 
+            if not api_key_information['retCode'] == 0:
+                return None
+
             return api_key_information
         except:
             return None
@@ -73,10 +76,16 @@ class ByBitBackend:
             return None
 
         try:
-            return session.get_wallet_balance(
+            user_balance_from_session = session.get_wallet_balance(
                 accountType=ByBitBackend.ACCOUNT_TYPES[account_type],
                 coin=coin
-            ) #['result'][0]['totalWalletBalance']
+            )
+
+            if not user_balance_from_session['retMsg'] == 'OK': # Request did not succeed.
+                return None
+
+            return user_balance_from_session['result']['list'][0]['totalWalletBalance']
+            
         except Exception as e:
             print(f'\n`get_user_balance_from_session` error: {str(e)}')
             return None
@@ -92,16 +101,17 @@ class ByBitBackend:
         try:
             executions = session.get_executions(category='linear')
 
-            return executions
+            if not executions['retMsg'] == 'OK':
+                return ['', '']
 
-            #for x in executions:
-            #    for l in x['result']['list']:
-            #        if l['side'] == 'Buy':
-            #            buy_total += l['orderPrice']
-            #        if l['side'] == 'Sell':
-            #            sell_total += l['orderPrice']
+            for x in executions['result']['list']:
+                for l in x:
+                    if l['side'] == 'Buy':
+                        buy_total += l['orderPrice']
+                    if l['side'] == 'Sell':
+                        sell_total += l['orderPrice']
 
-            #return [buy_total, sell_total]
+            return [buy_total, sell_total]
         except Exception as e:
             print(f'\n`get_total_bs_data_from_session` error: {str(e)}')
             return ['', ''] # The values should be decimal values, so if this is returned we know there was an error.
@@ -111,13 +121,14 @@ class ByBitBackend:
         session = self.get_session(user_id)
 
         if session is None:
-            return ['', '', ''] # The values should be decimal values, so if this is returned we know there was an error.
+            return ['', '', ''], False # The values should be decimal values, so if this is returned we know there was an error.
 
         all_symbols = []
         order_quantity = {}
         total_sell = 0
         total_buy = 0
         stock_total = 0
+        needs_warning = False # The only time this should be `True` is if `get_mark_price_kline` returns an error response.
 
         # In regards to the interval, if it is a number (which means the interval is in minutes),
         # the number will start with either a `1`, `3`, `5`, `6`, `2` or `7`.
@@ -128,10 +139,11 @@ class ByBitBackend:
         try:
             executions = session.get_executions(category='linear')
 
-            return executions
+            if not executions['retMsg'] == 'OK':
+                return ['', '', ''], needs_warning
 
-            '''for x in executions:
-                for l in x['result']['list']:
+            for x in executions['result']['list']:
+                for l in x:
                     if l['side'] == 'Buy':
                         all_symbols.append(l['symbol'])
                         order_quantity[l['symbol']] = [l['orderQty'], l['orderPrice']]
@@ -158,6 +170,11 @@ class ByBitBackend:
                     interval=interval
                 )['result']['list']
 
+                # Hopefully this does not happen, but it might. We never know when ByBit will have a server-related error/bug.
+                if not market_price_info['retMsg'] == 'OK':
+                    needs_warning = True
+                    continue
+
                 if market_price_info[1] > market_price_info[4]:
                     stock_total += -(market_price_info[1] - market_price_info[4])
                 else:
@@ -166,10 +183,10 @@ class ByBitBackend:
             for _, v in order_quantity.items():
                 total_buy += v[1]
 
-            return [stock_total, total_sell, total_buy]'''
+            return [stock_total, total_sell, total_buy], needs_warning
         except Exception as e:
             print(f'\n`get_total_stock_data_from_session` error: {str(e)}')
-            return ['', '', ''] # The values should be decimal values, so if this is returned we know there was an error.
+            return ['', '', ''], needs_warning # The values should be decimal values, so if this is returned we know there was an error.
 
     def close_session(self, user_id: int):
         for i in range(len(self.sessions)):

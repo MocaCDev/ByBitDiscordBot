@@ -167,7 +167,10 @@ async def calculate_gain_or_loss(ctx, based_on: str, user_id: int, O_interval: s
         return
 
     if based_on == 's':
-        stock_info = BV.BBB.get_total_stock_data_from_session(user_id, O_interval)
+        stock_info, needs_warnings = BV.BBB.get_total_stock_data_from_session(user_id, O_interval)
+
+        if needs_warnings:
+            ctx.send(f'{ctx.message.author.mention} While getting market data, an error response was returned by ByBit. Some market data was unable to be obtained, which might make the calculations inaccurate.')
 
         if stock_info[0] == '' or stock_info[1] == '' or stock_info[2] == '':
             ctx.send(f'{ctx.message.author.mention} An internal error has occurred on behalf of ByBit. Try again later.\nIf the problem persists, please get in contact with Fire🔥Kurama🃏.')
