@@ -19,7 +19,7 @@ class DB:
                     passwd=connection_data['pswd']
                 )
             except Exception as e:
-                print(f'{str(e)}\n\tIf this persist, please do not hesitate to contact Fire🔥Kurama🃏.')
+                print(f'{str(e)}\n\tMake sure all of the information pertaining to the database is correct.\n\tIf this persist, please do not hesitate to contact Fire🔥Kurama🃏.')
                 sys.exit(1)
 
             db_conn.close()
@@ -50,7 +50,7 @@ class DB:
 
                 t_layout.close()
             except Exception as e:
-                print(f'{str(e)}\n\tIf this persist, please do not hesitate to contact Fire🔥Kurama🃏.')
+                print(f'{str(e)}\n\tMake sure there are no typos in `table_layout.yaml`.\n\tIf this persist, please do not hesitate to contact Fire🔥Kurama🃏.')
                 sys.exit(1)
     
     # If more, or less, data is needed (more or less columns exist), this will need to be updated by the owner.

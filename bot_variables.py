@@ -8,13 +8,6 @@ import yaml
 # All variables used throughout the bot.
 # Put into a class to "group" them all together.
 class BotVariables:
-
-    # Get the discord token so the bot can actually work.
-    def get_discord_token():
-        with open('dt.yaml', 'r') as file:
-            discord_token = yaml.safe_load(file.read())
-
-            return discord_token['discord_token']
     
     # `!add_pub_channel [channel_id]` will add the channel ID to `PUBLIC_CHANNELS`.
     PUBLIC_CHANNELS = []
@@ -54,11 +47,11 @@ class BotVariables:
 
     # Run the bot.
     def start():
-        with open('discord_token.yaml', 'r') as file:
+        with open('dt.yaml', 'r') as file:
             discord_token_data = yaml.safe_load(file)
-            BotVariables.bot.run(discord_token_data['token'])
-
             file.close()
+            
+            BotVariables.bot.run(discord_token_data['discord_token'])
 
     # Used on commands that require the member to have admin permissions, as well as on 
     # commands that need to be in a private channel.

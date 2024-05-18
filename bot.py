@@ -3,7 +3,7 @@ import asyncio # Needed for sleeping (without pausing the bot, as `time.sleep` w
 import json
 import sys 
 
-BV.db.get_all_users()
+BV.start()
 
 sys.exit(0)
 
@@ -377,4 +377,4 @@ async def submit(ctx, account_type: str, public_key: str, private_key: str):
 
 # ------------  END   ------------
 
-BV.start(BV.get_discord_token())
+BV.start()
