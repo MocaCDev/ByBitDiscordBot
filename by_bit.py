@@ -84,7 +84,7 @@ class ByBitBackend:
             if not user_balance_from_session['retMsg'] == 'OK': # Request did not succeed.
                 return None
 
-            return user_balance_from_session['result']['list'][0]['totalWalletBalance']
+            return 0 if user_balance_from_session['result']['list'][0]['totalWalletBalance'] == '' else int(user_balance_from_session['result']['list'][0]['totalWalletBalance'])
             
         except Exception as e:
             print(f'\n`get_user_balance_from_session` error: {str(e)}')
@@ -101,15 +101,18 @@ class ByBitBackend:
         try:
             executions = session.get_executions(category='linear')
 
-            if not executions['retMsg'] == 'OK':
-                return ['', '']
+            return executions
 
-            for x in executions['result']['list']:
-                for l in x:
-                    if l['side'] == 'Buy':
-                        buy_total += l['orderPrice']
-                    if l['side'] == 'Sell':
-                        sell_total += l['orderPrice']
+            #if not executions['retMsg'] == 'OK':
+            #    return ['', '']
+
+            #for x in executions['result']['list']:
+            #    for l in x:
+            #        print(l)
+                    #if l['side'] == 'Buy':
+                    #    buy_total += l['orderPrice']
+                    #if l['side'] == 'Sell':
+                    #    sell_total += l['orderPrice']
 
             return [buy_total, sell_total]
         except Exception as e:
@@ -139,7 +142,9 @@ class ByBitBackend:
         try:
             executions = session.get_executions(category='linear')
 
-            if not executions['retMsg'] == 'OK':
+            return executions, needs_warning
+
+            '''if not executions['retMsg'] == 'OK':
                 return ['', '', ''], needs_warning
 
             for x in executions['result']['list']:
@@ -183,7 +188,7 @@ class ByBitBackend:
             for _, v in order_quantity.items():
                 total_buy += v[1]
 
-            return [stock_total, total_sell, total_buy], needs_warning
+            return [stock_total, total_sell, total_buy], needs_warning'''
         except Exception as e:
             print(f'\n`get_total_stock_data_from_session` error: {str(e)}')
             return ['', '', ''], needs_warning # The values should be decimal values, so if this is returned we know there was an error.

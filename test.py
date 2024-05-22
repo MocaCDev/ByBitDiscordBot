@@ -39,7 +39,7 @@ print(f'\tReturned: {BS}')
 #    print(f'\t`get_total_bs_data_from_session` succeeded:\n\tBuy/Sell Data: {BS}')
 
 print(f'\nTesting `get_total_stock_data_from_session` with interval of `D` (day):')
-SD = BV.BBB.get_total_stock_data_from_session(0, "D")
+SD, _ = BV.BBB.get_total_stock_data_from_session(0, "D")
 print(f'\tReturned: {SD}')
 #if SD[0] == '' or SD[1] == '' or SD[2] == '':
 #    print('\t`get_total_stock_data_from_session` failed. Let Moca know.')
