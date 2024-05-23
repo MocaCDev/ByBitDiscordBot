@@ -103,16 +103,17 @@ class ByBitBackend:
 
             #return executions
 
-            #if not executions['retMsg'] == 'OK':
-            #    return ['', '']
+            if not executions['retMsg'] == 'OK':
+                return ['', '']
 
-            #for x in executions['result']['list']:
-            #    for l in x:
-            #        print(l)
+            for x in executions['result']['list']:
+                for l in x:
+                    print(l)
+                    break
                     #if l['side'] == 'Buy':
-                    #    buy_total += l['orderPrice']
+                    #    buy_total += int(l['orderPrice'])
                     #if l['side'] == 'Sell':
-                    #    sell_total += l['orderPrice']
+                    #    sell_total += int(l['orderPrice'])
 
             return [buy_total, sell_total]
         except Exception as e:
@@ -147,22 +148,26 @@ class ByBitBackend:
 
             for x in executions['result']['list']:
                 for l in x:
-                    if l['side'] == 'Buy':
-                        all_symbols.append(l['symbol'])
-                        order_quantity[l['symbol']] = [int(l['orderQty']), int(l['orderPrice'])]
+                    print(l)
+                    break
+                    #if l['side'] == 'Buy':
+                    #    all_symbols.append(l['symbol'])
+                    #    order_quantity[l['symbol']] = [int(l['orderQty']), int(l['orderPrice'])]
 
-                    if l['side'] == 'Sell':
-                        if l['symbol'] in order_quantity:
+                    #if l['side'] == 'Sell':
+                    #    if l['symbol'] in order_quantity:
                             # If the order quantity for the sell of the stock minus the
                             # buy quantity is zero, that means the user sold all of the stock.
                             # If the user sold all of the stock, we want to make sure we remove
                             # the stocks symbol from `all_symbols` so we don't track the stocks
                             # price during `interval`.
-                            if order_quantity[l['symbol']][0]-int(l['orderQty']) == 0:
-                                del all_symbols[all_symbols.index(l['symbol'])]
-                                del order_quantity[l['symbol']] # Delete order information.
+                    #        if order_quantity[l['symbol']][0]-int(l['orderQty']) == 0:
+                    #            del all_symbols[all_symbols.index(l['symbol'])]
+                    #            del order_quantity[l['symbol']] # Delete order information.
 
-                        total_sell += int(l['orderPrice'])
+                    #    total_sell += int(l['orderPrice'])
+
+            return [0, 0, 0], False
 
             # Loop through all the symbols and get the stock data.
             # Takes the open price and subtracts it by the close price.
