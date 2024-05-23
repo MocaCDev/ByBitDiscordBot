@@ -101,7 +101,7 @@ class ByBitBackend:
         try:
             executions = session.get_executions(category='linear')
 
-            return executions
+            #return executions
 
             #if not executions['retMsg'] == 'OK':
             #    return ['', '']
@@ -142,16 +142,14 @@ class ByBitBackend:
         try:
             executions = session.get_executions(category='linear')
 
-            return executions, needs_warning
-
-            '''if not executions['retMsg'] == 'OK':
+            if not executions['retMsg'] == 'OK':
                 return ['', '', ''], needs_warning
 
             for x in executions['result']['list']:
                 for l in x:
                     if l['side'] == 'Buy':
                         all_symbols.append(l['symbol'])
-                        order_quantity[l['symbol']] = [l['orderQty'], l['orderPrice']]
+                        order_quantity[l['symbol']] = [int(l['orderQty']), int(l['orderPrice'])]
 
                     if l['side'] == 'Sell':
                         if l['symbol'] in order_quantity:
@@ -160,11 +158,11 @@ class ByBitBackend:
                             # If the user sold all of the stock, we want to make sure we remove
                             # the stocks symbol from `all_symbols` so we don't track the stocks
                             # price during `interval`.
-                            if order_quantity[l['symbol']][0]-l['orderQty'] == 0:
+                            if order_quantity[l['symbol']][0]-int(l['orderQty']) == 0:
                                 del all_symbols[all_symbols.index(l['symbol'])]
                                 del order_quantity[l['symbol']] # Delete order information.
 
-                        total_sell += l['orderPrice']
+                        total_sell += int(l['orderPrice'])
 
             # Loop through all the symbols and get the stock data.
             # Takes the open price and subtracts it by the close price.
@@ -180,15 +178,15 @@ class ByBitBackend:
                     needs_warning = True
                     continue
 
-                if market_price_info[1] > market_price_info[4]:
-                    stock_total += -(market_price_info[1] - market_price_info[4])
+                if market_price_info[0][1] > market_price_info[0][4]:
+                    stock_total += -(market_price_info[0][1] - market_price_info[0][4])
                 else:
                     stock_total += -1 * (market_price_info[1] - market_price_info[4])
 
             for _, v in order_quantity.items():
                 total_buy += v[1]
 
-            return [stock_total, total_sell, total_buy], needs_warning'''
+            return [stock_total, total_sell, total_buy], needs_warning
         except Exception as e:
             print(f'\n`get_total_stock_data_from_session` error: {str(e)}')
             return ['', '', ''], needs_warning # The values should be decimal values, so if this is returned we know there was an error.
